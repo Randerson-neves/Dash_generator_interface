@@ -14,7 +14,7 @@
 
 <script>
 import * as XLSX from 'xlsx';
-import {setDataType, setMappingIndicators} from '../utils/dataTreatment'
+import {setDataType, setMappingIndicators, generateDataArray} from '../utils/dataTreatment'
 //posteriormente, tentar ter um arquivo com todas as funções de tratamento do XLSX
 
 export default {
@@ -45,26 +45,9 @@ export default {
           const arrayBuffer = e.target.result;
           const workbook = XLSX.read(arrayBuffer, { type: 'array' });
           const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-          const data = XLSX.utils.sheet_to_json(worksheet, { range: 'A1:ZZ2'});
+          const data = XLSX.utils.sheet_to_json(worksheet, { range: 'A1:ZZ2'})[0];
           // data representa as 2 primeiras linhas do XLSX em todo o comprimento
-          let indicatorsArray = [];
-
-          const totalRows = data.length;
-          let processedRows = 0;
-
-          let convertedFile = Object.entries(data[0]).map(([type, name]) => ({ type, name }));
-
-          //transforma array em uma classe para permitir conversão em tags de dashboard
-          convertedFile.forEach(function(obj){
-            if(obj['type'].includes('EMPTY')){
-              return;
-            }
-            let objIndicators = {
-              indicator_name: obj['name'],
-              indicator_type: obj['type']
-            }
-            indicatorsArray.push(objIndicators)
-          })
+          let indicatorsArray = generateDataArray(data);
 
           //seta o tipo de dado que cada indicador possui e já transforma no modelo de código que será recebido
           //fazer com que ele possua um script default que faça com que o arquivo load e clean seja gerado automaticamente

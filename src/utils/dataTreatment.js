@@ -33,6 +33,23 @@ export function setMappingIndicators(arr){
     return textMap;
 }
 
+export function generateDataArray(data){
+    let convertedFile = Object.entries(data).map(([type, name]) => ({ type, name }));
+    let indicatorsArray = []
+          //transforma array em uma classe para permitir conversão em tags de dashboard
+          convertedFile.forEach(function(obj){
+            if(obj['type'].includes('EMPTY')){
+              return;
+            }
+            let objIndicators = {
+              indicator_name: obj['name'],
+              indicator_type: obj['type']
+            }
+            indicatorsArray.push(objIndicators)
+          })
+    return indicatorsArray;
+}
+
 function setIndicatorType(indicator){
     const numberType = ['inteiro', 'decimal', 'percentual', 'porcentagem']
     for (const elemento of numberType) {
