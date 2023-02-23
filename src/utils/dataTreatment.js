@@ -1,3 +1,22 @@
+import {generateSql} from '../utils/sqlGenerators'
+
+export function generateDataArray(data){
+  let convertedFile = Object.entries(data).map(([type, name]) => ({ type, name }));
+  let indicatorsArray = []
+        //transforma array em uma classe para permitir conversão em tags de dashboard
+        convertedFile.forEach(function(obj){
+          if(obj['type'].includes('EMPTY')){
+            return;
+          }
+          let objIndicators = {
+            indicator_name: obj['name'],
+            indicator_type: obj['type']
+          }
+          indicatorsArray.push(objIndicators)
+        })
+  return indicatorsArray;
+}
+
 export function setDataType(arr){
     let textType ='';
     arr.forEach(element => {
@@ -33,21 +52,15 @@ export function setMappingIndicators(arr){
     return textMap;
 }
 
-export function generateDataArray(data){
-    let convertedFile = Object.entries(data).map(([type, name]) => ({ type, name }));
-    let indicatorsArray = []
-          //transforma array em uma classe para permitir conversão em tags de dashboard
-          convertedFile.forEach(function(obj){
-            if(obj['type'].includes('EMPTY')){
-              return;
-            }
-            let objIndicators = {
-              indicator_name: obj['name'],
-              indicator_type: obj['type']
-            }
-            indicatorsArray.push(objIndicators)
-          })
-    return indicatorsArray;
+export function generateSqlScript(arr, team_name){
+  let sqlIndicators = '';
+  arr.forEach(element => {
+      let sqlType = setIndicatorType(element['indicator_type']) ? 'float' : 'time'
+      let text = "`" + `${String(element['indicator_name']).toLowerCase()}` + "` " + `${sqlType} DEFAULT NULL,
+      `;
+      sqlIndicators += text
+  });
+  return generateSql(sqlIndicators, team_name)
 }
 
 function setIndicatorType(indicator){

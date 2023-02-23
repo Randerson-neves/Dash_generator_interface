@@ -1,12 +1,13 @@
 <template>
   <q-page>
     <div class="q-layout column justify-center items-center q-pt-md q-pb-md">
+      <input type="text" v-model="inputValue" placeholder="Nome do ambiente" class="q-mb-md">
       <input type="file" ref="fileInput" style="display: none" @change="handleFileInput" class="bg-green-6 text-white p-4 rounded">
       <q-btn label="Selecione o arquivo" @click="chooseFile" class="bg-green-6 text-white p-4 rounded q-mt-md" />
       <q-btn-group class="q-mt-md">
         <q-btn label="Clean File Data" @click="copyContent(btn1_fileIndicators)" />
-        <q-btn label="Botão 2" @click="copyContent(btn2_fileMapping)" />
-        <q-btn label="Botão 3" @click="copyContent('Conteúdo do botão 3')" />
+        <q-btn label="Load File Data" @click="copyContent(btn2_fileMapping)" />
+        <q-btn label="Sql Scripts" @click="copyContent(btn3_sqlScripts)" />
       </q-btn-group>
     </div>
   </q-page>
@@ -14,7 +15,8 @@
 
 <script>
 import * as XLSX from 'xlsx';
-import {setDataType, setMappingIndicators, generateDataArray} from '../utils/dataTreatment'
+import {setDataType, setMappingIndicators, generateDataArray, generateSqlScript} from '../utils/dataTreatment'
+
 //posteriormente, tentar ter um arquivo com todas as funções de tratamento do XLSX
 
 export default {
@@ -22,7 +24,9 @@ export default {
       return {
         fileName: null,
         btn1_fileIndicators: null,
-        btn2_fileMapping: null
+        btn2_fileMapping: null,
+        btn3_sqlScripts: null,
+        inputValue: ""
       }
     },
     methods: {
@@ -54,6 +58,7 @@ export default {
           // e fique em storage no botão
           this.btn1_fileIndicators = setDataType(indicatorsArray);
           this.btn2_fileMapping = setMappingIndicators(indicatorsArray);
+          this.btn3_sqlScripts = generateSqlScript(indicatorsArray, this.inputValue.toLowerCase())
 
           resolve();
         };
