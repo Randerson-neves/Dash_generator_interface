@@ -8,27 +8,27 @@
 
       <div class="q-layout row justify-center items-center q-pt-md q-pb-md">
         <div class="sideinfo">
-          <div style="display: flex; flex-direction: column;">
-            <div class="scrollable">
+          <div class="markaround">
+            <div class="scrollable ">
               <p>{{ btn1_fileIndicators }}</p>
             </div>
-            <q-btn label="Clean File Data" @click="copyContent(btn1_fileIndicators)" />
+            <q-btn label="Clean File Data" @click="copyContent(btn1_fileIndicators)" :disabled="!allFunctionsCompleted"/>
           </div>
         </div>
         <div class="sideinfo">
-          <div style="display: flex; flex-direction: column;">
+          <div class="markaround">
             <div class="scrollable">
               <p>{{ btn2_fileMapping }}</p>
             </div>
-            <q-btn label="Load File Data" @click="copyContent(btn2_fileMapping)" />
+            <q-btn label="Load File Data" @click="copyContent(btn2_fileMapping)" :disabled="!allFunctionsCompleted"/>
           </div>
         </div>
         <div class="sideinfo">
-          <div style="display: flex; flex-direction: column;">
+          <div class="markaround">
             <div class="scrollable">
               <p>{{btn3_sqlScripts }}</p>
             </div>
-            <q-btn label="Sql Scripts" @click="copyContent(btn3_sqlScripts)" />
+            <q-btn label="Sql Scripts" @click="copyContent(btn3_sqlScripts)" :disabled="!allFunctionsCompleted"/>
           </div>
         </div>
       </div>
@@ -39,8 +39,6 @@
 <script>
 import * as XLSX from 'xlsx';
 import {setDataType, setMappingIndicators, generateDataArray, generateSqlScript} from '../utils/dataTreatment'
-
-//posteriormente, tentar ter um arquivo com todas as funções de tratamento do XLSX
 
 export default {
     data() {
@@ -79,13 +77,10 @@ export default {
           const workbook = XLSX.read(arrayBuffer, { type: 'array' });
           const worksheet = workbook.Sheets[workbook.SheetNames[0]];
           const data = XLSX.utils.sheet_to_json(worksheet, { range: 'A1:ZZ2'})[0];
-          // data representa as 2 primeiras linhas do XLSX em todo o comprimento
+
           let indicatorsArray = generateDataArray(data);
           this.procsParams = indicatorsArray;
 
-          //seta o tipo de dado que cada indicador possui e já transforma no modelo de código que será recebido
-          //fazer com que ele possua um script default que faça com que o arquivo load e clean seja gerado automaticamente
-          // e fique em storage no botão
           this.btn1_fileIndicators = setDataType(indicatorsArray);
           this.btn2_fileMapping = setMappingIndicators(indicatorsArray);
           this.btn3_sqlScripts = generateSqlScript(indicatorsArray, this.team_subdomain.toLowerCase())
@@ -156,6 +151,12 @@ export default {
 
   .btn-below {
     margin-top: 10px;
+  }
+  
+  .markaround{
+    border: 2px black solid;
+    display: flex; 
+    flex-direction: column;
   }
 
 </style>

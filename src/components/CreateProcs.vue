@@ -1,6 +1,6 @@
 <template>
     <div class="orderbutton">
-      <div v-for="(param, index) in params" :key="index" class="row">
+      <div v-for="(param, index) in params.fileParams" :key="index" class="row">
         <q-select
           v-model="param.input"
           :options="options"
@@ -9,12 +9,9 @@
           class="param-select"
           @change="updateText(param.input)"
         />
-        <p>
-            {{ param.input }}
-        </p>
         <q-input
           v-model="param.name"
-          class="param-input"
+          class="paraminput"
           label="Nome do Indicador"
           outlined
         />
@@ -26,47 +23,73 @@
           class="param-select"
         />
         <q-input
-          v-model="param.text"
+          v-if="param.input && param.input.value"
+          v-model="(param.input.value)"
           class="param-input"
           label="Input de texto baseado nas seleções acima"
           outlined
+          :value="''"
         />
+        <q-input
+          v-else
+          class="param-input"
+          label="Input de texto baseado nas seleções acima"
+          outlined
+          :value="''"
+        />
+        <p>
+          {{ param }}
+        </p>
       </div>
     </div>
   </template>
   
   <script>
   export default {
+
     data() {
       return {
         params: [],
         options: [
-          { label: 'Porcentagem', value: 'percent' },
-          { label: 'Número', value: 'number' },
-          { label: 'Hora', value: 'hour' },
-          { label: 'Moeda', value: 'currency' },
+          { label: 'Porcentagem', value: 'percentual_func_v2(' },
+          { label: 'Número', value: 'ROUND(' },
+          { label: 'Hora', value: 'big_time_to_sec(' },
+          { label: 'Moeda', value: 'ROUND(' },
         ],
         indicatorOptions: [],
         inputText: ''
       };
     },
+
     mounted() {
       const jsonParams = decodeURIComponent(this.$route.query.params);
-      this.params = JSON.parse(jsonParams);
+      this.params.fileParams = JSON.parse(jsonParams).map(param => {
+        return {
+          label: param.indicator_name,
+          type: this.changeType(param.indicator_type)
+        };
+      });
+      this.indicatorOptions = this.params.fileParams.map(param => {
+        return {
+          label: param.label  ,
+          type: param.type
+        };
+      });
     },
+
     methods: {
-      updateText(param) {
-        console.log(param)
-        if (param.value === 'percent') {
-          param.input = 'percentual_func_v2(';
-        } else if (param.input === 'number' || param.type === 'hour') {
-          param.text = 'ROUND(';
-        } else if (param.input === 'hour') {
-          param.text = 'big_time_to_sec(';
+      changeType(type){
+        const numberType = ['inteiro', 'decimal', 'percentual', 'porcentagem', 'hora']
+        for (const elemento of numberType) {
+          if (type.toLowerCase().includes(elemento)) {
+            console.log(elemento)
+            return elemento
+          }
         }
       }
     }
   };
+
   </script>
   
   <style>
