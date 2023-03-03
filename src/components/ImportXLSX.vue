@@ -60,9 +60,6 @@ export default {
       },
 
       handleFileInput(event) {
-        if(this.team_subdomain == ""){
-
-        }
         const file = event.target.files[0];
         this.fileName = file.name;
         this.importData(file);

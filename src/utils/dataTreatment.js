@@ -2,14 +2,13 @@ import {generateSql} from '../utils/sqlGenerators'
 
 export function generateDataArray(data){
   let convertedFile = Object.entries(data).map(([type, name]) => ({ type, name }));
-  let indicatorsArray = []
-        //transforma array em uma classe para permitir conversão em tags de dashboard
+  let indicatorsArray = [];
         convertedFile.forEach(function(obj){
           if(obj['type'].includes('EMPTY')){
             return;
           }
           let objIndicators = {
-            indicator_name: obj['name'],
+            indicator_name: removeSpecialCharacters(obj['name']),
             indicator_type: obj['type']
           }
           indicatorsArray.push(objIndicators)
@@ -71,3 +70,14 @@ function setIndicatorType(indicator){
       }
     }
   }
+
+function removeSpecialCharacters(indicator){
+  indicator = indicator.replace(/ /g, "_");
+  
+  // Remove acentos e substitui 'Ç' por 'C'
+  indicator = indicator.normalize("NFD")
+               .replace(/[\u0300-\u036f]/g, "")
+               .replace(/Ç/g, "C");
+  
+  return indicator;
+}
